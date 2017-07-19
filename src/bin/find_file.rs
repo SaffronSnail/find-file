@@ -1,8 +1,7 @@
 use std::io;
-use std::path::{Path,PathBuf};
+use std::path::{Path, PathBuf};
 
-fn find_file<P: AsRef<Path>, N: AsRef<Path>>(path: P, name: N)
-    -> io::Result<Vec<PathBuf>> {
+pub fn find_file<P: AsRef<Path>, N: AsRef<Path>>(path: P, name: N) -> io::Result<Vec<PathBuf>> {
     use std::fs;
 
     let name = name.as_ref();
@@ -26,9 +25,17 @@ fn main() {
     let mut args = env::args();
     args.next(); // skip the progam name
     let working_directory = args.next();
-    for path in find_file(working_directory.expect("The first argument is required to be the working directory!"),
-                          args.next().expect("The second argument is required to be the filename to search for!")
-                          .as_str()).expect("") {
+    for path in find_file(
+        working_directory.expect(
+            "The first argument is required to be the working directory!",
+        ),
+        args.next()
+            .expect(
+                "The second argument is required to be the filename to search for!",
+            )
+            .as_str(),
+    ).expect("")
+    {
         println!("{}", path.display());
     }
 }
@@ -41,20 +48,25 @@ mod tests {
     fn finds_entries() {
         use std::collections::HashSet;
         use std::env::set_current_dir;
-        use std::path::{PathBuf,Path};
-        use std::fs::{create_dir,File,remove_dir_all};
+        use std::path::{PathBuf, Path};
+        use std::fs::{create_dir, File, remove_dir_all};
 
         const FILENAME: &'static str = "foobar.sh";
 
         fn check_result<T, E: ::std::fmt::Display>(result: Result<T, E>) {
             match result {
-                Ok(_) => {},
-                Err(e) => panic!("Error! {}", e)
+                Ok(_) => {}
+                Err(e) => panic!("Error! {}", e),
             }
         }
 
-        fn test<P: AsRef<Path>>(path: &P, expected: &HashSet<PathBuf>) -> Result<(), ::std::io::Error> {
-            let result = find_file(path, FILENAME)?.into_iter().collect::<HashSet<_>>();
+        fn test<P: AsRef<Path>>(
+            path: &P,
+            expected: &HashSet<PathBuf>,
+        ) -> Result<(), ::std::io::Error> {
+            let result = find_file(path, FILENAME)?
+                .into_iter()
+                .collect::<HashSet<_>>();
             println!("result: {:?}", result);
             println!("expected: {:?}", expected);
             println!("=============================================");
@@ -63,7 +75,7 @@ mod tests {
         }
 
         let mut expected_results = HashSet::new();
-        let root_dir = "find_file_find_entries_test_environment"; 
+        let root_dir = "find_file_find_entries_test_environment";
 
         if Path::exists(PathBuf::from(root_dir).as_path()) {
             println!("Removing {}", root_dir);
@@ -99,4 +111,3 @@ mod tests {
         check_result(remove_dir_all(root_dir));
     }
 }
-
