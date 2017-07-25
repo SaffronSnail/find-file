@@ -18,6 +18,7 @@ pub fn select_file<T: ::std::fmt::Display, In: io::BufRead, Out: io::Write>(
         let max_entry = max_entry; // remove mutability
 
         write!(output, "Please select an option (0 - {}): ", max_entry)?;
+        output.flush()?;
 
         loop {
             let mut response = String::new();
@@ -36,8 +37,6 @@ pub fn select_file<T: ::std::fmt::Display, In: io::BufRead, Out: io::Write>(
 }
 
 fn main() {
-    use std::process::exit;
-
     let mut args = ::std::env::args();
     args.next();
 
@@ -46,16 +45,18 @@ fn main() {
 
     let output = io::stdout();
     let mut output = output.lock();
-    match select_file(&args.collect(), &mut input, &mut output) {
+    let options = args.collect();
+    match select_file(&options, &mut input, &mut output) {
         Ok(index) => {
             if let Some(index) = index {
-                exit(index as i32);
+                use ::std::io::Write;
+                write!(io::stderr(), "{}", options[index]).unwrap();
             }
         }
         Err(e) => {
             println!("Error when selecting file!");
             println!("{}", e);
-            exit(-1)
+            ::std::process::exit(-1)
         }
     }
 }
