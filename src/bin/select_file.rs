@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate clap;
+
 use std::io;
 
 pub fn select_file<T: ::std::fmt::Display, In: io::BufRead, Out: io::Write>(
@@ -37,15 +40,20 @@ pub fn select_file<T: ::std::fmt::Display, In: io::BufRead, Out: io::Write>(
 }
 
 fn main() {
-    let mut args = ::std::env::args();
-    args.next();
+    let matches = clap_app!(select_file =>
+        (about: "Prompts the user to select from a set of options")
+        (version: crate_version!())
+        (author: "Bryan Ferris <primummoven@gmail.com>")
+        (@arg OPTIONS: +required ... "The set of options that the user can choose to select from")
+    ).get_matches();
+    let options = matches.values_of("OPTIONS").unwrap().collect();
 
     let input = io::stdin();
     let mut input = input.lock();
 
     let output = io::stdout();
     let mut output = output.lock();
-    let options = args.collect();
+
     match select_file(&options, &mut input, &mut output) {
         Ok(index) => {
             if let Some(index) = index {

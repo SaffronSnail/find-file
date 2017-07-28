@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate clap;
+
 use std::io;
 use std::path::{Path, PathBuf};
 
@@ -20,22 +23,19 @@ pub fn find_file<P: AsRef<Path>, N: AsRef<Path>>(path: P, name: N) -> io::Result
 }
 
 fn main() {
-    use std::env;
+    let matches = clap_app!(find_file =>
+              (about: "Searches a directory tree for files with a specified file name and prints the results")
+              (version: crate_version!())
+              (author: "Bryan Ferris <primummoven@gmail.com>")
+              (@arg SEARCH_DIRECTORY: +required "The directory to search for files in")
+              (@arg SEARCH_TERM:      +required "The filename to search for")
+    ).get_matches();
 
-    let mut args = env::args();
-    args.next(); // skip the progam name
-    let working_directory = args.next();
-    for path in find_file(
-        working_directory.expect(
-            "The first argument is required to be the working directory!",
-        ),
-        args.next()
-            .expect(
-                "The second argument is required to be the filename to search for!",
-            )
-            .as_str(),
-    ).expect("")
-    {
+    // get values of required arguments
+    let search_directory = PathBuf::from(matches.value_of("SEARCH_DIRECTORY").unwrap());
+    let search_term = matches.value_of("SEARCH_TERM").unwrap();
+
+    for path in find_file(search_directory, search_term).unwrap() {
         println!("{}", path.display());
     }
 }

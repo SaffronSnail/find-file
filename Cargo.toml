@@ -7,3 +7,6 @@ description = "Utility to search a directory subtree for all files of a name and
 repository = "https://github.com/saffronsnail/find-file"
 license-file = "LICENSE"
 
+[dependencies]
+clap = "*"
+
