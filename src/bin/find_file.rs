@@ -4,11 +4,22 @@ extern crate clap;
 use std::io;
 use std::path::{Path, PathBuf};
 
+/// Finds all files with the given name in the tree rooted at path
+///
+/// # Examples
+/// ```
+/// find_file("/home/user", ".vimrc");
+/// find_file(".", "plan.sh");
+/// ```
 pub fn find_file<P: AsRef<Path>, N: AsRef<Path>>(path: P, name: N) -> io::Result<Vec<PathBuf>> {
     use std::fs;
 
     let name = name.as_ref();
+
+    // list of matches
     let mut ret = Vec::new();
+
+    // search all files and subdirectories for the specified name
     for entry in fs::read_dir(path)? {
         let entry = entry?;
         let file_type = entry.file_type()?;
@@ -19,9 +30,11 @@ pub fn find_file<P: AsRef<Path>, N: AsRef<Path>>(path: P, name: N) -> io::Result
         }
     }
 
+    // if we get to this point, we encountered no errors and found all matches
     Ok(ret)
 }
 
+/// The binary reads the arguments from the command line and prints the results
 fn main() {
     let matches = clap_app!(find_file =>
               (about: "Searches a directory tree for files with a specified file name and prints the results")
