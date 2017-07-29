@@ -52,11 +52,8 @@ pub fn select_file<T: ::std::fmt::Display, In: io::BufRead, Out: io::Write>(
                 return Ok(None);
             } else {
                 match response.parse::<usize>() {
-                    Ok(selection) if selection < options.len() =>
-                        return Ok(Some(selection)),
-                    _ =>
-                        write!(output, "Please enter only a number from 0 to {}",
-                               max_entry)?
+                    Ok(selection) if selection < options.len() => return Ok(Some(selection)),
+                    _ => write!(output, "Please enter only a number from 0 to {}", max_entry)?,
                 };
             }
         }
@@ -85,7 +82,7 @@ fn main() {
     match select_file(&options, &mut input, &mut output) {
         Ok(index) => {
             if let Some(index) = index {
-                use ::std::io::Write;
+                use std::io::Write;
                 write!(io::stderr(), "{}", options[index]).unwrap();
             }
         }
@@ -118,7 +115,7 @@ mod test {
             for i in 0..buf_len {
                 match self.data.next() {
                     Some(b) => buf[i] = b,
-                    None    => return Ok(i),
+                    None => return Ok(i),
                 }
             }
             return Ok(buf_len);
@@ -134,10 +131,11 @@ mod test {
         match select_file(
             &mut options,
             &mut BufReader::new(StringReader::from(&input)),
-            &mut output) {
+            &mut output,
+        ) {
             Ok(Some(i)) => assert_eq!(i, 1),
-            Ok(None)    => panic!("Returned None, expected 1!"),
-            Err(e)      => panic!(format!("Error! {}", e)),
+            Ok(None) => panic!("Returned None, expected 1!"),
+            Err(e) => panic!(format!("Error! {}", e)),
         }
     }
 }
