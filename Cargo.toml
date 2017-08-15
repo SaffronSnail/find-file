@@ -1,6 +1,6 @@
 [package]
 name = "find-file"
-version = "1.0.1"
+version = "2.0.0"
 authors = ["Bryan Ferris <primummoven@gmail.com>"]
 
 description = "Utility to search a directory subtree for all files of a name and prompting the user to select one"
