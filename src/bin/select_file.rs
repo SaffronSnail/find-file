@@ -35,7 +35,7 @@ pub fn select_file<T: ::std::fmt::Display, In: io::BufRead, Out: io::Write>(
         let mut max_entry = -1;
         for entry in options.iter() {
             max_entry += 1;
-            write!(output, "{}: {}\n", max_entry, entry)?;
+            writeln!(output, "{}: {}", max_entry, entry)?;
         }
         // we have now figured out what the highest valid input is, so strip
         // mutability from the variable

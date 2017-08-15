@@ -1,6 +1,6 @@
 pkg_name=find-file
 pkg_origin=saffronsnial
-pkg_version=1.0.0
+pkg_version=1.0.1
 pkg_license=('unlicense')
 pkg_source=nosuchfile.tar.gz
 pkg_bin_dirs=(bin)
