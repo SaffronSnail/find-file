@@ -76,14 +76,14 @@ fn main() {
     // read/write to/from std in/out
     let input = io::stdin();
     let mut input = input.lock();
-    let output = io::stdout();
+    let output = io::stderr();
     let mut output = output.lock();
 
     match select_file(&options, &mut input, &mut output) {
         Ok(index) => {
             if let Some(index) = index {
                 use std::io::Write;
-                write!(io::stderr(), "{}", options[index]).unwrap();
+                write!(io::stdout(), "{}", options[index]).unwrap();
             }
         }
         Err(e) => {
